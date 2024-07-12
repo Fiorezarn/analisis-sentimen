@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sentiment Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+  </head>
+  <body class="flex">
+    <div
+      class="sidebar fixed top-0 bottom-0 lg:left-0 p-2 w-[300px] overflow-y-auto text-center bg-gray-900"
+    >
+      <div class="text-gray-100 text-xl">
+        <div class="p-2.5 mt-1 flex items-center">
+          <h1 class="font-bold text-gray-200 text-2xl ml-3">
+            Nano<span class="text-blue-600">vest</span>
+          </h1>
+          <i
+            class="bi bi-x cursor-pointer ml-28 lg:hidden"
+            onclick="openSidebar()"
+          ></i>
+        </div>
+        <div class="my-2 bg-gray-600 h-[1px]"></div>
+      </div>
+      <div
+        class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white"
+      >
+        <i class="bi bi-house-door-fill"></i>
+        <span class="text-xl ml-4 flex items-center text-gray-200 font-bold"
+          ><box-icon name="dashboard" type="solid" color="#ffffff"> </box-icon>
+          Dashboard</span
+        >
+      </div>
+      <div
+        class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white"
+      >
+        <i class="bi bi-house-door-fill"></i>
+        <span class="text-xl ml-4 flex items-center text-gray-200 font-bold"
+          ><box-icon name="analyse" color="#ffffff" type="solid"> </box-icon>
+          Sentimen</span
+        >
+      </div>
+    </div>
+    <div class="content flex-1 ml-[300px] p-10 bg-slate-200 h-[100vh]">
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 w-full"
+      >
+        <div class="bg-green-600 rounded-lg shadow-md overflow-hidden h-40">
+          <div class="flex items-center h-full p-4">
+            <div class="text-7xl">
+              <FaRegSmile />
+            </div>
+            <div class="ml-8">
+              <div class="text-lg text-right font-bold">Sentimen Positive</div>
+              <div class="text-5xl">1500</div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-slate-200 rounded-lg shadow-md overflow-hidden h-40">
+          <div class="flex items-center h-full p-4">
+            <div class="text-7xl">
+              <PiSmileyMehBold />
+            </div>
+            <div class="ml-8">
+              <div class="text-lg text-right font-bold">Sentimen Neutral</div>
+              <div class="text-5xl">1500</div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-red-700 rounded-lg shadow-md overflow-hidden h-40">
+          <div class="flex items-center h-full p-4">
+            <div class="text-7xl">
+              <FaRegFaceAngry />
+            </div>
+            <div class="ml-8">
+              <div class="text-lg text-right font-bold">Sentimen Negative</div>
+              <div class="text-5xl">1500</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function renderChart(data) {
+        const ctx = document.getElementById("sentimentChart").getContext("2d");
+        const chart = new Chart(ctx, {
+          type: "pie",
+          data: {
+            labels: ["Negative", "Neutral", "Positive"],
+            datasets: [
+              {
+                label: "Sentiment Scores",
+                data: data,
+                backgroundColor: [
+                  "rgba(255, 99, 132, 0.2)",
+                  "rgba(255, 206, 86, 0.2)",
+                  "rgba(75, 192, 192, 0.2)",
+                ],
+                borderColor: [
+                  "rgba(255, 99, 132, 1)",
+                  "rgba(255, 206, 86, 1)",
+                  "rgba(75, 192, 192, 1)",
+                ],
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+          },
+        });
+      }
+
+      document.querySelector("form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        fetch("/predict", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            renderChart(data.scores);
+            document.getElementById("sentimentType").innerText = data.sentiment;
+          });
+      });
+    </script>
+  </body>
+</html>
