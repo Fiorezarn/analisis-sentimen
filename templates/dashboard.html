@@ -30,7 +30,7 @@
       >
         <i class="bi bi-house-door-fill"></i>
         <span class="text-xl ml-4 flex items-center text-gray-200 font-bold"
-          ><box-icon name="dashboard" type="solid" color="#ffffff"> </box-icon>
+          ><box-icon name="dashboard" type="solid" color="#ffffff"></box-icon>
           Dashboard</span
         >
       </a>
@@ -40,93 +40,69 @@
       >
         <i class="bi bi-house-door-fill"></i>
         <span class="text-xl ml-4 flex items-center text-gray-200 font-bold"
-          ><box-icon name="analyse" color="#ffffff" type="solid"> </box-icon>
+          ><box-icon name="analyse" color="#ffffff" type="solid"></box-icon>
           Sentimen</span
         >
       </a>
     </div>
-    <div class="content flex-1 ml-[300px] p-10 bg-slate-200 h-[100vh]">
-      <div
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 w-full"
-      >
-        <div class="bg-green-600 rounded-lg shadow-md overflow-hidden h-40">
-          <div class="flex items-center h-full p-4">
-            <div class="text-7xl">
-              <box-icon name="happy-beaming"></box-icon>
+    <div class="flex-1 ml-[300px] p-10 bg-slate-200 h-[100vh]">
+      <div class="p-10 bg-[#966FE8] rounded-md mb-5">
+        <div class="px-12">
+          <h2 class="text-white">Selamat Datang!</h2>
+          <h1 class="font-bold text-2xl text-white">
+            Aplikasi Analisis Sentimen Ulasan Aplikasi Nanovest Pada Google Play
+            Store Menggunakan BERT
+          </h1>
+        </div>
+      </div>
+      <div class="flex justify-center">
+        <div class="bg-[#F5F5F5] rounded-md p-5 max-h-[400px]">
+          <h1 class="text-2xl font-bold mb-2 text-center">
+            Total: 2762 Ulasan
+          </h1>
+          <div class="flex items-center mt-5">
+            <box-icon name="happy-beaming" size="lg" color="#D9B8FF"></box-icon>
+            <div class="ml-4">
+              <h2 class="text-xl font-bold text-center">1561</h2>
+              <p>Bintang 4-5</p>
             </div>
-            <div class="ml-8">
-              <div class="text-lg text-right font-bold">Sentimen Positive</div>
-              <div class="text-5xl">1500</div>
+          </div>
+          <div class="flex items-center">
+            <box-icon name="happy-beaming" size="lg" color="#FFC470"></box-icon>
+            <div class="ml-4">
+              <h2 class="text-xl font-bold text-center">619</h2>
+              <p>Bintang 3</p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <box-icon name="happy-beaming" size="lg" color="#FFAFA3"></box-icon>
+            <div class="ml-4">
+              <h2 class="text-xl font-bold text-center">536</h2>
+              <p>Bintang 1-2</p>
             </div>
           </div>
         </div>
-        <div class="bg-slate-200 rounded-lg shadow-md overflow-hidden h-40">
-          <div class="flex items-center h-full p-4">
-            <div class="text-7xl">
-              <box-icon name="sad"></box-icon>
-            </div>
-            <div class="ml-8">
-              <div class="text-lg text-right font-bold">Sentimen Neutral</div>
-              <div class="text-5xl">1500</div>
-            </div>
-          </div>
-        </div>
-        <div class="bg-red-700 rounded-lg shadow-md overflow-hidden h-40">
-          <div class="flex items-center h-full p-4">
-            <div class="text-7xl">
-              <box-icon name="angry"></box-icon>
-            </div>
-            <div class="ml-8">
-              <div class="text-lg text-right font-bold">Sentimen Negative</div>
-              <div class="text-5xl">1500</div>
-            </div>
-          </div>
+        <div class="w-1/2 p-5">
+          <canvas id="myChart"></canvas>
         </div>
       </div>
     </div>
     <script>
-      function renderChart(data) {
-        const ctx = document.getElementById("sentimentChart").getContext("2d");
-        const chart = new Chart(ctx, {
-          type: "pie",
-          data: {
-            labels: ["Negative", "Neutral", "Positive"],
-            datasets: [
-              {
-                label: "Sentiment Scores",
-                data: data,
-                backgroundColor: [
-                  "rgba(255, 99, 132, 0.2)",
-                  "rgba(255, 206, 86, 0.2)",
-                  "rgba(75, 192, 192, 0.2)",
-                ],
-                borderColor: [
-                  "rgba(255, 99, 132, 1)",
-                  "rgba(255, 206, 86, 1)",
-                  "rgba(75, 192, 192, 1)",
-                ],
-                borderWidth: 1,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-          },
-        });
-      }
-
-      document.querySelector("form").addEventListener("submit", function (e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        fetch("/predict", {
-          method: "POST",
-          body: formData,
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            renderChart(data.scores);
-            document.getElementById("sentimentType").innerText = data.sentiment;
-          });
+      const myChart = new Chart("myChart", {
+        type: "pie",
+        data: {
+          labels: ["Negative", "Neutral", "Positive"],
+          datasets: [
+            {
+              label: "Sentiment Analysis",
+              data: [1200, 800, 762],
+              backgroundColor: ["#ff6384", "#ffcd56", "#4bc0c0"],
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+        },
       });
     </script>
   </body>
