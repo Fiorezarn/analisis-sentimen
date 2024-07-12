@@ -82,7 +82,7 @@ def predict_sentiment(text):
     return sentiment_scores, sentiment_type
 
 
-@app.route('/dashboard')
+@app.route('/')
 def dashboard():
     return render_template('dashboard.html')
 
