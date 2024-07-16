@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template
-from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
+from transformers import BertTokenizer, BertForSequenceClassification
 import torch
 import numpy as np
 import pandas as pd
@@ -11,9 +11,9 @@ import re
 # Initialize Flask app
 app = Flask(__name__)
 
-# Load pre-trained model and tokenizer
-tokenizer = DistilBertTokenizer.from_pretrained('./sentiment-model')
-model = DistilBertForSequenceClassification.from_pretrained('./sentiment-model')
+# Load pre-trained model and tokenizer for IndoBERT
+tokenizer = BertTokenizer.from_pretrained('./sentiment-model')
+model = BertForSequenceClassification.from_pretrained('./sentiment-model')
 
 # Download NLTK resources
 nltk.download('punkt')
@@ -51,7 +51,7 @@ def predict_sentiment(text):
         return_tensors="pt",
         truncation=True,
         padding=True,
-        max_length=32  # Adjust max_length to match training
+        max_length=512
     )
     outputs = model(**inputs)
     scores = outputs.logits[0].detach().numpy()
