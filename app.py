@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template
-from transformers import BertTokenizer, BertForSequenceClassification, BertConfig
+from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
 import torch
 import numpy as np
 import pandas as pd
@@ -11,13 +11,9 @@ import re
 # Initialize Flask app
 app = Flask(__name__)
 
-# Load pre-trained model and tokenizer for IndoBERT
-tokenizer = BertTokenizer.from_pretrained('indobenchmark/indobert-base-p1')
-config = BertConfig.from_pretrained('indobenchmark/indobert-base-p1')
-config.num_labels = 3  # Assuming we have 3 classes for sentiment: negative, neutral, positive
-
-# Instantiate model
-model = BertForSequenceClassification.from_pretrained('indobenchmark/indobert-base-p1', config=config)
+# Load pre-trained model and tokenizer
+tokenizer = DistilBertTokenizer.from_pretrained('./sentiment-model')
+model = DistilBertForSequenceClassification.from_pretrained('./sentiment-model')
 
 # Download NLTK resources
 nltk.download('punkt')
@@ -55,32 +51,16 @@ def predict_sentiment(text):
         return_tensors="pt",
         truncation=True,
         padding=True,
-        max_length=512
+        max_length=32  # Adjust max_length to match training
     )
     outputs = model(**inputs)
-    scores = outputs.logits[0].detach().numpy()  # Use logits instead of outputs[0]
+    scores = outputs.logits[0].detach().numpy()
     scores = torch.softmax(torch.tensor(scores), dim=0).numpy()
 
-    # Adjust scores to reflect a more nuanced approach
-    if len(scores) == 3:
-        negative = scores[0]
-        neutral = scores[1]
-        positive = scores[2]
-    elif len(scores) == 5:
-        negative = scores[0] + scores[1]
-        neutral = scores[2]
-        positive = scores[3] + scores[4]
-    else:
-        raise ValueError("Unexpected number of score values from the model")
-
-    sentiment_scores = [negative, neutral, positive]
+    sentiment_scores = [float(score) for score in scores]
     sentiment_type = ["Negative", "Neutral", "Positive"][np.argmax(sentiment_scores)]
 
-    # Convert scores to list for JSON serialization
-    sentiment_scores = [float(score) for score in sentiment_scores]
-
     return sentiment_scores, sentiment_type
-
 
 @app.route('/')
 def dashboard():
@@ -89,34 +69,24 @@ def dashboard():
 @app.route('/sentimen')
 def analyze():
     return render_template('input_form.html')
+    
+@app.route('/evaluasi')
+def evaluasi():
+    return render_template('evaluasi.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
     text = request.form['text']
     scores, sentiment = predict_sentiment(text)
-    
-    # Debugging output
-    print(f"Input text: {text}")
-    print(f"Processed text: {preprocess_text(text)}")
-    print(f"Predicted scores: {scores}")
-    print(f"Predicted sentiment: {sentiment}")
-    
-    return jsonify({"scores": scores, "sentiment": sentiment})
+    return jsonify({"scores": scores, "sentiment": sentiment, "text": text, "preprocess_text": preprocess_text(text)})
 
 @app.route('/sentiment_scores')
 def sentiment_scores():
-    # Example of evaluating sentiment on the dataset
     sentiments = []
     for idx, row in df.iterrows():
         text = row['text']
         scores, sentiment = predict_sentiment(text)
         sentiments.append({"text": text, "scores": scores, "sentiment": sentiment})
-        
-        # Debugging output
-        print(f"Input text: {text}")
-        print(f"Processed text: {preprocess_text(text)}")
-        print(f"Predicted scores: {scores}")
-        print(f"Predicted sentiment: {sentiment}")
     
     return jsonify({"sentiments": sentiments})
 
