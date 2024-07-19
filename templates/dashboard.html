@@ -98,6 +98,12 @@
       </div>
     </div>
     <script>
+      const data = [1200, 800, 762];
+      const total = data.reduce((acc, value) => acc + value, 0);
+      const percentages = data.map(
+        (value) => ((value / total) * 100).toFixed(2) + "%"
+      );
+
       const myChart = new Chart("myChart", {
         type: "pie",
         data: {
@@ -105,13 +111,24 @@
           datasets: [
             {
               label: "Sentiment Analysis",
-              data: [1200, 800, 762],
+              data: data,
               backgroundColor: ["#FFAFA3", "#FFC470", "#D9B8FF"],
             },
           ],
         },
         options: {
           responsive: true,
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function (tooltipItem) {
+                  return `${tooltipItem.label}: ${
+                    percentages[tooltipItem.dataIndex]
+                  }`;
+                },
+              },
+            },
+          },
         },
       });
     </script>
