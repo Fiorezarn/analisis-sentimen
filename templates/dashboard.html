@@ -73,21 +73,21 @@
           <div class="flex items-center mt-5">
             <box-icon name="happy-beaming" size="lg" color="#D9B8FF"></box-icon>
             <div class="ml-4">
-              <h2 class="text-xl font-bold text-center">1561</h2>
+              <h2 class="text-xl font-bold text-left">1561</h2>
               <p>Bintang 4-5</p>
             </div>
           </div>
           <div class="flex items-center">
             <box-icon name="happy-beaming" size="lg" color="#FFC470"></box-icon>
             <div class="ml-4">
-              <h2 class="text-xl font-bold text-center">619</h2>
+              <h2 class="text-xl font-bold text-left">619</h2>
               <p>Bintang 3</p>
             </div>
           </div>
           <div class="flex items-center">
             <box-icon name="happy-beaming" size="lg" color="#FFAFA3"></box-icon>
             <div class="ml-4">
-              <h2 class="text-xl font-bold text-center">536</h2>
+              <h2 class="text-xl font-bold text-left">536</h2>
               <p>Bintang 1-2</p>
             </div>
           </div>
@@ -98,12 +98,6 @@
       </div>
     </div>
     <script>
-      const data = [1200, 800, 762];
-      const total = data.reduce((acc, value) => acc + value, 0);
-      const percentages = data.map(
-        (value) => ((value / total) * 100).toFixed(2) + "%"
-      );
-
       const myChart = new Chart("myChart", {
         type: "pie",
         data: {
@@ -111,24 +105,13 @@
           datasets: [
             {
               label: "Sentiment Analysis",
-              data: data,
+              data: [1200, 800, 762],
               backgroundColor: ["#FFAFA3", "#FFC470", "#D9B8FF"],
             },
           ],
         },
         options: {
           responsive: true,
-          plugins: {
-            tooltip: {
-              callbacks: {
-                label: function (tooltipItem) {
-                  return `${tooltipItem.label}: ${
-                    percentages[tooltipItem.dataIndex]
-                  }`;
-                },
-              },
-            },
-          },
         },
       });
     </script>
