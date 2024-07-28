@@ -100,9 +100,13 @@
       ></canvas>
     </div>
     <script>
+      let sentimentChart;
       function renderChart(data) {
         const ctx = document.getElementById("sentimentChart").getContext("2d");
-        const chart = new Chart(ctx, {
+        if (sentimentChart) {
+          sentimentChart.destroy();
+        }
+        sentimentChart = new Chart(ctx, {
           type: "pie",
           data: {
             labels: ["Negative", "Neutral", "Positive"],
@@ -136,6 +140,7 @@
         fetch("/predict", {
           method: "POST",
           body: formData,
+          mode: "cors",
         })
           .then((response) => response.json())
           .then((data) => {
