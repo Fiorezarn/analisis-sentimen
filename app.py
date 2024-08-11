@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template
-from transformers import BertTokenizer, BertForSequenceClassification
-import torch
+from transformers import BertTokenizer, TFBertForSequenceClassification
+import tensorflow as tf
 import numpy as np
 import pandas as pd
 import nltk
@@ -11,9 +11,9 @@ import re
 # Initialize Flask app
 app = Flask(__name__)
 
-# Load pre-trained model and tokenizer for IndoBERT
+# Load pre-trained model and tokenizer for IndoBERT using TensorFlow backend
 tokenizer = BertTokenizer.from_pretrained('./sentiment-model')
-model = BertForSequenceClassification.from_pretrained('./sentiment-model')
+model = TFBertForSequenceClassification.from_pretrained('./sentiment-model')
 
 # Download NLTK resources
 nltk.download('punkt')
@@ -48,14 +48,13 @@ def predict_sentiment(text):
     preprocessed_text = preprocess_text(text)
     inputs = tokenizer.encode_plus(
         preprocessed_text,
-        return_tensors="pt",
+        return_tensors="tf",  # Use TensorFlow tensors
         truncation=True,
         padding=True,
         max_length=512
     )
-    outputs = model(**inputs)
-    scores = outputs.logits[0].detach().numpy()
-    scores = torch.softmax(torch.tensor(scores), dim=0).numpy()
+    outputs = model(inputs)
+    scores = tf.nn.softmax(outputs.logits, axis=1).numpy()[0]
 
     sentiment_scores = [float(score) for score in scores]
     sentiment_type = ["Negative", "Neutral", "Positive"][np.argmax(sentiment_scores)]
@@ -69,7 +68,7 @@ def dashboard():
 @app.route('/sentimen')
 def analyze():
     return render_template('input_form.html')
-    
+
 @app.route('/evaluasi')
 def evaluasi():
     return render_template('evaluasi.html')
